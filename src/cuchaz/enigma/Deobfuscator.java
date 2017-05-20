@@ -22,6 +22,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
+import cuchaz.enigma.analysis.*;
 import javassist.CtClass;
 import javassist.bytecode.Descriptor;
 
@@ -38,12 +39,6 @@ import com.strobel.decompiler.languages.java.ast.AstBuilder;
 import com.strobel.decompiler.languages.java.ast.CompilationUnit;
 import com.strobel.decompiler.languages.java.ast.InsertParenthesesVisitor;
 
-import cuchaz.enigma.analysis.EntryReference;
-import cuchaz.enigma.analysis.JarClassIterator;
-import cuchaz.enigma.analysis.JarIndex;
-import cuchaz.enigma.analysis.SourceIndex;
-import cuchaz.enigma.analysis.SourceIndexVisitor;
-import cuchaz.enigma.analysis.Token;
 import cuchaz.enigma.bytecode.ClassProtectifier;
 import cuchaz.enigma.bytecode.ClassPublifier;
 import cuchaz.enigma.mapping.ArgumentEntry;
@@ -97,6 +92,46 @@ public class Deobfuscator {
 		
 		// init mappings
 		setMappings(new Mappings());
+		markWordAsDeObfuscate();
+	}
+
+	public void markWordAsDeObfuscate(){
+		try{
+			Map<Entry,Access> access = m_jarIndex.getAllAccess();
+			Set<ClassEntry> classEntries = m_jarIndex.getAllClassEntries();
+			for (ClassEntry classEntry:classEntries){
+				try {
+					String simpleName =classEntry.getSimpleName();
+					if (checkNameValid(simpleName)) {
+						this.markAsDeobfuscated(classEntry);
+					}
+				}catch (Exception e){
+					System.out.println("mark word As De Obfuscate error:"+e);
+				}
+			}
+
+			for (Entry entry:access.keySet()){
+				if (entry instanceof MethodEntry){
+					MethodEntry methodEntry = (MethodEntry)entry;
+					if (checkNameValid(methodEntry.getName())){
+						this.markAsDeobfuscated(entry);
+					}
+				}else if (entry instanceof FieldEntry){
+
+				}
+
+			}
+		}catch (Exception e){
+			System.out.println("mark word As De Obfuscate error:"+e);
+		}
+
+	}
+
+	public boolean checkNameValid(String name){
+		if (name!=null && name.length()>=5 && name.matches("[a-zA-Z0-9]+")){
+			return true;
+		}
+		return false;
 	}
 	
 	public JarFile getJar() {

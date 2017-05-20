@@ -836,4 +836,12 @@ public class JarIndex {
 		
 		return obfClassChain;
 	}
+
+	public Map<Entry,Access> getAllAccess(){
+		return m_access;
+	}
+
+	public Set<ClassEntry> getAllClassEntries(){
+		return m_obfClassEntries;
+	}
 }
