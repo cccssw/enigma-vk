@@ -73,6 +73,11 @@ public class GuiController {
 		m_gui.onFinishOpenJar(m_deobfuscator.getJarName());
 		refreshClasses();
 	}
+
+	public void markWords(){
+		m_deobfuscator.markWordAsDeObfuscate();
+		refreshClasses();
+	}
 	
 	public void closeJar() {
 		m_deobfuscator = null;

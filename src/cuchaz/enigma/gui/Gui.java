@@ -640,6 +640,20 @@ public class Gui {
 				});
 			}
 		}
+		{
+			JMenu menu = new JMenu("Action");
+			menuBar.add(menu);
+			{
+				JMenuItem item = new JMenuItem("MarkWords");
+				menu.add(item);
+				item.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						m_controller.markWords();
+					}
+				});
+			}
+		}
 		
 		// init state
 		onCloseJar();
