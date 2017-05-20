@@ -95,6 +95,7 @@ public class Gui {
 	private JFrame m_frame;
 	private ClassSelector m_obfClasses;
 	private ClassSelector m_deobfClasses;
+	private ClassSelector m_nonePackageClasses;
 	private JEditorPane m_editor;
 	private JPanel m_classesPanel;
 	private JSplitPane m_splitClasses;
@@ -175,7 +176,7 @@ public class Gui {
 		obfPanel.setLayout(new BorderLayout());
 		obfPanel.add(new JLabel("Obfuscated Classes"), BorderLayout.NORTH);
 		obfPanel.add(obfScroller, BorderLayout.CENTER);
-		
+
 		// init deobfuscated classes list
 		m_deobfClasses = new ClassSelector(ClassSelector.DeobfuscatedClassEntryComparator);
 		m_deobfClasses.setListener(new ClassSelectionListener() {
@@ -189,9 +190,26 @@ public class Gui {
 		deobfPanel.setLayout(new BorderLayout());
 		deobfPanel.add(new JLabel("De-obfuscated Classes"), BorderLayout.NORTH);
 		deobfPanel.add(deobfScroller, BorderLayout.CENTER);
-		
+
+		// init none package classes list
+		m_nonePackageClasses = new ClassSelector(ClassSelector.ObfuscatedClassEntryComparator);
+		m_nonePackageClasses.setListener(new ClassSelectionListener() {
+			@Override
+			public void onSelectClass(ClassEntry classEntry) {
+				navigateTo(classEntry);
+			}
+		});
+		JScrollPane noneScroller = new JScrollPane(m_nonePackageClasses);
+		JPanel nonePanel = new JPanel();
+		nonePanel.setLayout(new BorderLayout());
+		nonePanel.add(new JLabel("None-Package Classes"), BorderLayout.NORTH);
+		nonePanel.add(noneScroller, BorderLayout.CENTER);
+
+		JSplitPane upperPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, nonePanel,obfPanel );
+		upperPanel.setResizeWeight(0.3);
+
 		// set up classes panel (don't add the splitter yet)
-		m_splitClasses = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, obfPanel, deobfPanel);
+		m_splitClasses = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, upperPanel, deobfPanel);
 		m_splitClasses.setResizeWeight(0.3);
 		m_classesPanel = new JPanel();
 		m_classesPanel.setLayout(new BorderLayout());
@@ -735,6 +753,10 @@ public class Gui {
 	
 	public void setDeobfClasses(Collection<ClassEntry> deobfClasses) {
 		m_deobfClasses.setClasses(deobfClasses);
+	}
+
+	public void setNonePkgClasses(Collection<ClassEntry> bfClasses){
+		m_nonePackageClasses.setClasses(bfClasses);
 	}
 	
 	public void setMappingsFile(File file) {

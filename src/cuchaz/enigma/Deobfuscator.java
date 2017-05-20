@@ -195,6 +195,25 @@ public class Deobfuscator {
 		}
 		return translator;
 	}
+	public void getSeparatedClasses(List<ClassEntry> obfClasses, List<ClassEntry> deobfClasses,List<ClassEntry> nonePkgClass) {
+		for (ClassEntry obfClassEntry : m_jarIndex.getObfClassEntries()) {
+			// skip inner classes
+			if (obfClassEntry.isInnerClass()) {
+				continue;
+			}
+			
+			ClassEntry deobfClassEntry = deobfuscateEntry(obfClassEntry);
+			// separate the classes
+			if (isInDeObfuscatTrans(obfClassEntry) || !deobfClassEntry.equals(obfClassEntry)) {
+				deobfClasses.add(deobfClassEntry);
+			}else if (obfClassEntry.getPackageName().equals(Constants.NonePackage)){
+				nonePkgClass.add(obfClassEntry);
+			}else{
+				// otherwise, assume it's still obfuscated
+				obfClasses.add(obfClassEntry);
+			}
+		}
+	}
 	
 	public void getSeparatedClasses(List<ClassEntry> obfClasses, List<ClassEntry> deobfClasses) {
 		for (ClassEntry obfClassEntry : m_jarIndex.getObfClassEntries()) {
@@ -440,6 +459,14 @@ public class Deobfuscator {
 			return null;
 		}
 		return getTranslator(TranslationDirection.Deobfuscating).translateEntry(obfEntry);
+	}
+
+	public boolean isInDeObfuscatTrans(Entry obfEntry){
+		if (obfEntry == null) {
+			return false;
+		}
+		Translator translator = getTranslator(TranslationDirection.Deobfuscating);
+		return translator.contains(obfEntry);
 	}
 	
 	public <E extends Entry,C extends Entry> EntryReference<E,C> obfuscateReference(EntryReference<E,C> deobfReference) {

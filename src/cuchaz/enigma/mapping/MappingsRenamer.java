@@ -70,10 +70,13 @@ public class MappingsRenamer {
 		List<ClassMapping> mappingChain = getOrCreateClassMappingChain(obf);
 		if (mappingChain.size() == 1) {
 			ClassMapping classMapping = mappingChain.get(0);
+			classMapping.setMarkedAsDeObfs(true);
 			m_mappings.setClassDeobfName(classMapping, deobfName);
 		} else {
 			ClassMapping outerClassMapping = mappingChain.get(mappingChain.size() - 2);
+			outerClassMapping.setMarkedAsDeObfs(true);
 			outerClassMapping.setInnerClassName(obf, deobfName);
+
 		}
 	}
 	

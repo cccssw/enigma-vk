@@ -90,7 +90,7 @@ public class GuiController {
 		in.close();
 		m_isDirty = false;
 		m_gui.setMappingsFile(file);
-		refreshClasses();
+		markWords();
 		refreshCurrentClass();
 	}
 	
@@ -303,9 +303,11 @@ public class GuiController {
 	private void refreshClasses() {
 		List<ClassEntry> obfClasses = Lists.newArrayList();
 		List<ClassEntry> deobfClasses = Lists.newArrayList();
-		m_deobfuscator.getSeparatedClasses(obfClasses, deobfClasses);
+		List<ClassEntry> noneClasses = Lists.newArrayList();
+		m_deobfuscator.getSeparatedClasses(obfClasses, deobfClasses,noneClasses);
 		m_gui.setObfClasses(obfClasses);
 		m_gui.setDeobfClasses(deobfClasses);
+		m_gui.setNonePkgClasses(noneClasses);
 	}
 	
 	private void refreshCurrentClass() {

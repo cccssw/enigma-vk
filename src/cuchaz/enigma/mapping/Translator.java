@@ -137,6 +137,15 @@ public class Translator {
 			);
 		}
 	}
+
+	public boolean contains(Entry in){
+		// normal classes are easy
+		ClassMapping classMapping = m_classes.get(in.getName());
+		if (classMapping != null && classMapping.isMarkedAsDeObfs()) {
+			return true;
+		}
+		return false;
+	}
 	
 	public String translate(FieldEntry in) {
 		

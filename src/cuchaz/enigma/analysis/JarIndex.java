@@ -153,10 +153,10 @@ public class JarIndex {
 						m_anonymousClasses.put(innerClassEntry, enclosingBehavior);
 						
 						// DEBUG
-						//System.out.println("ANONYMOUS: " + outerClassEntry.getName() + "$" + innerClassEntry.getSimpleName());
+						System.out.println("ANONYMOUS: " + outerClassEntry.getName() + "$" + innerClassEntry.getSimpleName());
 					} else {
 						// DEBUG
-						//System.out.println("INNER: " + outerClassEntry.getName() + "$" + innerClassEntry.getSimpleName());
+						System.out.println("INNER: " + outerClassEntry.getName() + "$" + innerClassEntry.getSimpleName());
 					}
 				}
 			}
@@ -167,7 +167,7 @@ public class JarIndex {
 				String newName = innerClassEntry.buildClassEntry(getObfClassChain(innerClassEntry)).getName();
 				if (!innerClassEntry.getName().equals(newName)) {
 					// DEBUG
-					//System.out.println("REPLACE: " + innerClassEntry.getName() + " WITH " + newName);
+					System.out.println("REPLACE: " + innerClassEntry.getName() + " WITH " + newName);
 					renames.put(innerClassEntry.getName(), newName);
 				}
 			}

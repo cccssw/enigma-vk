@@ -29,7 +29,17 @@ public class ClassMapping implements Serializable, Comparable<ClassMapping> {
 	private Map<String,FieldMapping> m_fieldsByDeobf;
 	private Map<String,MethodMapping> m_methodsByObf;
 	private Map<String,MethodMapping> m_methodsByDeobf;
-	
+
+	public boolean isMarkedAsDeObfs() {
+		return markedAsDeObfs;
+	}
+
+	public void setMarkedAsDeObfs(boolean markedAsDeObfs) {
+		this.markedAsDeObfs = markedAsDeObfs;
+	}
+
+	private boolean markedAsDeObfs;
+
 	public ClassMapping(String obfFullName) {
 		this(obfFullName, null);
 	}
