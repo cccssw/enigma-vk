@@ -122,7 +122,7 @@ public class TranslatingTypeLoader implements ITypeLoader {
 				System.err.println(String.format("WARNING: no class %s after inner class reconstruction. Try %s",
 					className, obfClassEntry.buildClassEntry(classChain)
 				));
-				return null;
+//				return null;
 			}
 		}
 		
@@ -206,6 +206,7 @@ public class TranslatingTypeLoader implements ITypeLoader {
 		if (obfClassEntry.isInnerClass()) {
 			// try just the inner class name
 			classNamesToTry.add(obfClassEntry.getInnermostClassName());
+			classNamesToTry.add(obfClassEntry.getOutermostClassInnerName());
 		}
 		return classNamesToTry;
 	}

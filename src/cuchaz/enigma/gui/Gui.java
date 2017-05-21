@@ -96,6 +96,8 @@ public class Gui {
 	private ClassSelector m_obfClasses;
 	private ClassSelector m_deobfClasses;
 	private ClassSelector m_nonePackageClasses;
+	private ClassSelector m_innerClasses;
+
 	private JEditorPane m_editor;
 	private JPanel m_classesPanel;
 	private JSplitPane m_splitClasses;
@@ -205,11 +207,29 @@ public class Gui {
 		nonePanel.add(new JLabel("None-Package Classes"), BorderLayout.NORTH);
 		nonePanel.add(noneScroller, BorderLayout.CENTER);
 
-		JSplitPane upperPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, nonePanel,obfPanel );
+		//init inner classes list
+		m_innerClasses = new ClassSelector(ClassSelector.ObfuscatedClassEntryComparator);
+		m_innerClasses.setListener(new ClassSelectionListener() {
+			@Override
+			public void onSelectClass(ClassEntry classEntry) {
+				navigateTo(classEntry);
+			}
+		});
+		JScrollPane innerScroller = new JScrollPane(m_innerClasses);
+		JPanel innerPanel = new JPanel();
+		innerPanel.setLayout(new BorderLayout());
+		innerPanel.add(new JLabel("Inner/Anonymous Classes"), BorderLayout.NORTH);
+		innerPanel.add(innerScroller, BorderLayout.CENTER);
+
+		JSplitPane upperPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, innerPanel ,obfPanel );
+		upperPanel.setResizeWeight(0.3);
+
+
+		JSplitPane downPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, nonePanel,deobfPanel);
 		upperPanel.setResizeWeight(0.3);
 
 		// set up classes panel (don't add the splitter yet)
-		m_splitClasses = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, upperPanel, deobfPanel);
+		m_splitClasses = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, upperPanel, downPanel);
 		m_splitClasses.setResizeWeight(0.3);
 		m_classesPanel = new JPanel();
 		m_classesPanel.setLayout(new BorderLayout());
@@ -670,6 +690,15 @@ public class Gui {
 						m_controller.markWords();
 					}
 				});
+
+				JMenuItem refresh = new JMenuItem("Refresh");
+				menu.add(refresh);
+				refresh.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						m_controller.refreshClasses();
+					}
+				});
 			}
 		}
 		
@@ -757,6 +786,10 @@ public class Gui {
 
 	public void setNonePkgClasses(Collection<ClassEntry> bfClasses){
 		m_nonePackageClasses.setClasses(bfClasses);
+	}
+
+	public void setInnerClasses(Collection<ClassEntry> bfClasses){
+		m_innerClasses.setClasses(bfClasses);
 	}
 	
 	public void setMappingsFile(File file) {

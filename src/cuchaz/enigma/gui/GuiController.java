@@ -262,13 +262,24 @@ public class GuiController {
 		
 		// get the reference target class
 		EntryReference<Entry,Entry> obfReference = m_deobfuscator.obfuscateReference(deobfReference);
+		ClassEntry current = null;
+		ClassEntry rawClassEntry = obfReference.getLocationClassEntry();
+		ClassEntry innerClassEntry = obfReference.getLocationClassEntry().getOutermostInnerClassEntry();
 		ClassEntry obfClassEntry = obfReference.getLocationClassEntry().getOutermostClassEntry();
-		if (!m_deobfuscator.isObfuscatedIdentifier(obfClassEntry)) {
-			throw new IllegalArgumentException("Obfuscated class " + obfClassEntry + " was not found in the jar!");
+		if (m_deobfuscator.isObfuscatedIdentifier(innerClassEntry)){
+			current = innerClassEntry;
+		}else if (m_deobfuscator.isObfuscatedIdentifier(rawClassEntry)){
+			current = rawClassEntry;
+		}else{
+			if (!m_deobfuscator.isObfuscatedIdentifier(obfClassEntry)) {
+				throw new IllegalArgumentException("Obfuscated class " + obfClassEntry + " was not found in the jar!");
+			}
+			current = obfClassEntry;
 		}
+
 		if (m_currentObfClass == null || !m_currentObfClass.equals(obfClassEntry)) {
 			// deobfuscate the class, then navigate to the reference
-			m_currentObfClass = obfClassEntry;
+			m_currentObfClass = current;
 			deobfuscate(m_currentObfClass, obfReference);
 		} else {
 			showReference(obfReference);
@@ -300,14 +311,16 @@ public class GuiController {
 		return !m_referenceStack.isEmpty();
 	}
 	
-	private void refreshClasses() {
+	public void refreshClasses() {
 		List<ClassEntry> obfClasses = Lists.newArrayList();
 		List<ClassEntry> deobfClasses = Lists.newArrayList();
 		List<ClassEntry> noneClasses = Lists.newArrayList();
-		m_deobfuscator.getSeparatedClasses(obfClasses, deobfClasses,noneClasses);
+		List<ClassEntry> innerClasses = Lists.newArrayList();
+		m_deobfuscator.getSeparatedClasses(obfClasses, deobfClasses,noneClasses,innerClasses);
 		m_gui.setObfClasses(obfClasses);
 		m_gui.setDeobfClasses(deobfClasses);
 		m_gui.setNonePkgClasses(noneClasses);
+		m_gui.setInnerClasses(innerClasses);
 	}
 	
 	private void refreshCurrentClass() {

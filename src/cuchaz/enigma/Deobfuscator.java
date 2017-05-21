@@ -98,7 +98,7 @@ public class Deobfuscator {
 	public void markWordAsDeObfuscate(){
 		try{
 			Map<Entry,Access> access = m_jarIndex.getAllAccess();
-			Set<ClassEntry> classEntries = m_jarIndex.getAllClassEntries();
+			Set<ClassEntry> classEntries = m_jarIndex.getObfClassEntries();
 			for (ClassEntry classEntry:classEntries){
 				try {
 					String simpleName =classEntry.getSimpleName();
@@ -195,11 +195,12 @@ public class Deobfuscator {
 		}
 		return translator;
 	}
-	public void getSeparatedClasses(List<ClassEntry> obfClasses, List<ClassEntry> deobfClasses,List<ClassEntry> nonePkgClass) {
-		for (ClassEntry obfClassEntry : m_jarIndex.getObfClassEntries()) {
+	public void getSeparatedClasses(List<ClassEntry> obfClasses, List<ClassEntry> deobfClasses,List<ClassEntry> nonePkgClass,List<ClassEntry> innerClass) {
+		Set<ClassEntry> all = m_jarIndex.getObfClassEntries();
+		for (ClassEntry obfClassEntry : all) {
 			// skip inner classes
 			if (obfClassEntry.isInnerClass()) {
-				continue;
+				innerClass.add(obfClassEntry);
 			}
 			
 			ClassEntry deobfClassEntry = deobfuscateEntry(obfClassEntry);

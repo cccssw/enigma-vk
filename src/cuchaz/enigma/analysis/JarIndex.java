@@ -58,6 +58,7 @@ import cuchaz.enigma.mapping.Translator;
 public class JarIndex {
 	
 	private Set<ClassEntry> m_obfClassEntries;
+	private Set<ClassEntry> m_nonePkgClassEntries;
 	private TranslationIndex m_translationIndex;
 	private Map<Entry,Access> m_access;
 	private Multimap<ClassEntry,FieldEntry> m_fields;
@@ -72,6 +73,7 @@ public class JarIndex {
 	
 	public JarIndex() {
 		m_obfClassEntries = Sets.newHashSet();
+		m_nonePkgClassEntries = Sets.newHashSet();
 		m_translationIndex = new TranslationIndex();
 		m_access = Maps.newHashMap();
 		m_fields = HashMultimap.create();
@@ -84,7 +86,11 @@ public class JarIndex {
 		m_anonymousClasses = Maps.newHashMap();
 		m_bridgedMethods = Maps.newHashMap();
 	}
-	
+
+	public Set<ClassEntry> getM_nonePkgClassEntries() {
+		return m_nonePkgClassEntries;
+	}
+
 	public void indexJar(JarFile jar, boolean buildInnerClasses) {
 		
 		// step 1: read the class names
@@ -158,6 +164,9 @@ public class JarIndex {
 						// DEBUG
 						System.out.println("INNER: " + outerClassEntry.getName() + "$" + innerClassEntry.getSimpleName());
 					}
+				}else{
+					System.out.println("None package class: "+innerClassEntry.getSimpleName());
+					m_nonePkgClassEntries.add(innerClassEntry);
 				}
 			}
 			
@@ -841,7 +850,4 @@ public class JarIndex {
 		return m_access;
 	}
 
-	public Set<ClassEntry> getAllClassEntries(){
-		return m_obfClassEntries;
-	}
 }

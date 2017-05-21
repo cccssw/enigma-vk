@@ -109,9 +109,22 @@ public class ClassEntry implements Entry, Serializable {
 		}
 		return m_name;
 	}
+
+	public String getOutermostClassInnerName() {
+		if (isInnerClass()) {
+			String className = m_name.substring(m_name.indexOf('$')+1, m_name.length());
+			String pkgname = getPackageName();
+			return pkgname+"/"+className;
+		}
+		return m_name;
+	}
 	
 	public ClassEntry getOutermostClassEntry() {
 		return new ClassEntry(getOutermostClassName());
+	}
+
+	public ClassEntry getOutermostInnerClassEntry(){
+		return new ClassEntry(getOutermostClassInnerName());
 	}
 	
 	public String getOuterClassName() {
