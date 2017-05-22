@@ -203,11 +203,16 @@ public class TranslatingTypeLoader implements ITypeLoader {
 			// taking off the none package, if any
 			classNamesToTry.add(obfClassEntry.getSimpleName());
 		}
-		if (obfClassEntry.isInnerClass()) {
-			// try just the inner class name
-			classNamesToTry.add(obfClassEntry.getInnermostClassName());
-			classNamesToTry.add(obfClassEntry.getOutermostClassInnerName());
+		if (obfClassEntry.isInnerClass()){
+			String innerMostClassName = obfClassEntry.getInnermostClassName();
+			while (obfClassEntry.isInnerClass()){
+				// try just the inner class name
+				classNamesToTry.add(obfClassEntry.getOutermostClassInnerName());
+				obfClassEntry = obfClassEntry.getOutermostInnerClassEntry();
+			}
+			classNamesToTry.add(innerMostClassName);
 		}
+
 		return classNamesToTry;
 	}
 
