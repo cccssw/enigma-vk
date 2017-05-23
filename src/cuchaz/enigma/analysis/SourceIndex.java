@@ -35,7 +35,7 @@ public class SourceIndex {
 	private boolean m_ignoreBadTokens;
 	
 	public SourceIndex(String source) {
-		this(source, true);
+		this(source, false);
 	}
 	
 	public SourceIndex(String source, boolean ignoreBadTokens) {
