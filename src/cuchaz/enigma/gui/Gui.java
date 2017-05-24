@@ -122,6 +122,7 @@ public class Gui {
 	private JMenuItem m_showInheritanceMenu;
 	private JMenuItem m_openEntryMenu;
 	private JMenuItem m_openPreviousMenu;
+	private JMenuItem m_openGoNextMenu;
 	private JMenuItem m_showCallsMenu;
 	private JMenuItem m_showImplementationsMenu;
 	private JMenuItem m_toggleMappingMenu;
@@ -282,7 +283,10 @@ public class Gui {
 					case KeyEvent.VK_P:
 						m_openPreviousMenu.doClick();
 					break;
-					
+					case KeyEvent.VK_G:
+						m_openGoNextMenu.doClick();
+						break;
+
 					case KeyEvent.VK_C:
 						m_showCallsMenu.doClick();
 					break;
@@ -371,6 +375,7 @@ public class Gui {
 			menu.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
+					m_controller.saveNextReference(m_reference);
 					m_controller.openPreviousReference();
 				}
 			});
@@ -378,6 +383,20 @@ public class Gui {
 			menu.setEnabled(false);
 			popupMenu.add(menu);
 			m_openPreviousMenu = menu;
+		}
+		{
+			JMenuItem menu = new JMenuItem("Go to next");
+			menu.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					m_controller.savePreviousReference(m_reference);
+					m_controller.openNextReference();
+				}
+			});
+			menu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, 0));
+			menu.setEnabled(false);
+			popupMenu.add(menu);
+			m_openGoNextMenu = menu;
 		}
 		{
 			JMenuItem menu = new JMenuItem("Mark as deobfuscated");
@@ -936,7 +955,8 @@ public class Gui {
 		
 		Token token = m_controller.getToken(pos);
 		boolean isToken = token != null;
-		
+		EntryReference<Entry,Entry> mPrevious = m_reference;
+
 		m_reference = m_controller.getDeobfReference(token);
 		boolean isClassEntry = isToken && m_reference.entry instanceof ClassEntry;
 		boolean isFieldEntry = isToken && m_reference.entry instanceof FieldEntry;
@@ -957,6 +977,7 @@ public class Gui {
 		m_showCallsMenu.setEnabled(isClassEntry || isFieldEntry || isMethodEntry || isConstructorEntry);
 		m_openEntryMenu.setEnabled(isInJar && (isClassEntry || isFieldEntry || isMethodEntry || isConstructorEntry));
 		m_openPreviousMenu.setEnabled(m_controller.hasPreviousLocation());
+		m_openGoNextMenu.setEnabled(m_controller.hasNextLocation());
 		m_toggleMappingMenu.setEnabled(isRenameable && isToken);
 		
 		if (isToken && m_controller.entryHasDeobfuscatedName(m_reference.entry)) {
@@ -964,12 +985,18 @@ public class Gui {
 		} else {
 			m_toggleMappingMenu.setText("Mark as deobfuscated");
 		}
+		if (m_reference==null){
+			m_reference = mPrevious;
+		}
 	}
 	
 	private void navigateTo(Entry entry) {
 		if (!m_controller.entryIsInJar(entry)) {
 			// entry is not in the jar. Ignore it
 			return;
+		}
+		if (m_reference==null){
+			m_reference = new EntryReference<Entry,Entry>(entry, entry.getName());
 		}
 		if (m_reference != null) {
 			m_controller.savePreviousReference(m_reference);
@@ -981,6 +1008,9 @@ public class Gui {
 		if (!m_controller.entryIsInJar(reference.getLocationClassEntry())) {
 			// reference is not in the jar. Ignore it
 			return;
+		}
+		if (m_reference==null){
+			m_reference = reference;
 		}
 		if (m_reference != null) {
 			m_controller.savePreviousReference(m_reference);

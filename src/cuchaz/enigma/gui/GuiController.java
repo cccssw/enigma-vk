@@ -53,6 +53,8 @@ public class GuiController {
 	private ClassEntry m_currentObfClass;
 	private boolean m_isDirty;
 	private Deque<EntryReference<Entry,Entry>> m_referenceStack;
+
+	private Deque<EntryReference<Entry,Entry>> m_referenceNextStack;
 	
 	public GuiController(Gui gui) {
 		m_gui = gui;
@@ -61,6 +63,7 @@ public class GuiController {
 		m_currentObfClass = null;
 		m_isDirty = false;
 		m_referenceStack = Queues.newArrayDeque();
+		m_referenceNextStack = Queues.newArrayDeque();
 	}
 	
 	public boolean isDirty() {
@@ -303,12 +306,28 @@ public class GuiController {
 	
 	public void openPreviousReference() {
 		if (hasPreviousLocation()) {
-			openReference(m_deobfuscator.deobfuscateReference(m_referenceStack.pop()));
+			EntryReference<Entry,Entry> deobfReference = m_referenceStack.pop();
+			openReference(m_deobfuscator.deobfuscateReference(deobfReference));
 		}
 	}
-	
+
 	public boolean hasPreviousLocation() {
 		return !m_referenceStack.isEmpty();
+	}
+
+	public void saveNextReference(EntryReference<Entry,Entry> deobfReference){
+		m_referenceNextStack.push(m_deobfuscator.obfuscateReference(deobfReference));
+	}
+
+	public void openNextReference() {
+		if (hasNextLocation()) {
+			EntryReference<Entry,Entry> deobfReference = m_referenceNextStack.pop();
+			openReference(m_deobfuscator.deobfuscateReference(deobfReference));
+		}
+	}
+
+	public boolean hasNextLocation() {
+		return !m_referenceNextStack.isEmpty();
 	}
 	
 	public void refreshClasses() {
