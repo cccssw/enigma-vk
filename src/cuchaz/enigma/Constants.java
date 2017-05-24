@@ -12,7 +12,7 @@ package cuchaz.enigma;
 
 public class Constants {
 	public static final String Name = "Enigma VK";
-	public static final String Version = "0.11 beta(VK Fork)";
+	public static final String Version = "0.12 beta(VK Fork)";
 	public static final String Url = "https://github.com/cccssw/enigma-vk";
 	public static final int MiB = 1024 * 1024; // 1 mebibyte
 	public static final int KiB = 1024; // 1 kebibyte
